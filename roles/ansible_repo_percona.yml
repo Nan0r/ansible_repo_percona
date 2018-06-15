@@ -10,6 +10,6 @@
 
   - name: Import ercona GPG key.
     rpm_key:
-      key: /etc/pki/rpm-gpg/RPM-GPG-KEY-percona
+      key: https://www.percona.com/downloads/RPM-GPG-KEY-percona
       state: present
 
