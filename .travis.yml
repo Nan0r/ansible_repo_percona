@@ -22,7 +22,6 @@ install:
 
 before_script:
  - sudo docker logs ansible
- - sudo docker exec -it ansible /bin/bash -c "systemctl status sshd"
  - sudo docker exec -it ansible /bin/bash -c "ssh -oStrictHostKeyChecking=no -i .ssh/id_rsa localhost exit"
  - sudo docker exec -it ansible /bin/bash -c "whoami"
  - sudo docker exec -it ansible /bin/bash -c "pwd"
