@@ -1,0 +1,15 @@
+---
+- hosts: all
+  sudo: yes
+
+  tasks:
+  - name: adding percona repository on redhat like operating system
+    yum:
+      name: http://www.percona.com/downloads/percona-release/redhat/0.1-4/percona-release-0.1-4.noarch.rpm
+      state: present
+
+  - name: Import Percona GPG key.
+    rpm_key:
+      key: /etc/pki/rpm-gpg/RPM-GPG-KEY-percona
+      state: present
+

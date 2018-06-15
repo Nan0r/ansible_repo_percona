@@ -1,0 +1,40 @@
+sudo: required
+language: python
+python: "2.7"
+env:
+  matrix:
+  - OS_TYPE=centos OS_VERSION=7
+  
+services:
+  - docker
+  
+before_install:
+  - sudo apt-get update
+  - echo 'DOCKER_OPTS="-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock -s devicemapper"' | sudo tee /etc/default/docker > /dev/null
+  - sudo service docker restart
+  - sleep 5
+  - sudo docker pull nan0r/docker_centos_ansible
+
+install:
+ - pwd
+ - docker run --privileged -d -v ~/build/Nan0r/ansible_repo_percona/:/root/ansible_repo_percona:rw --name ansible docker.io/nan0r/docker_centos_ansible /usr/sbin/init
+ - docker ps -a 
+
+before_script:
+ - sudo docker logs ansible
+ - sudo docker exec -it ansible ls -als /root/ansible_repo_percona/
+
+script:
+ # Run tests in Container
+ - sudo docker exec -it ansible /bin/bash -c "ansible-playbook -i /root/ansible_repo_percona/tests/inventory /root/ansible_repo_percona/tests/test.yml --syntax-check"
+ - sudo docker exec -it ansible /bin/bash -c "ansible-playbook -i /root/ansible_repo_percona/tests/inventory /root/ansible_repo_percona/tests/test.yml --connection=local --sudo"
+ - sudo docker exec -it ansible /bin/bash -c "ansible-playbook -i /root/ansible_repo_percona/tests/inventory /root/ansible_repo_percona/tests/test.yml --connection=local --sudo | grep -q 'changed=0.*failed=0' && (echo 'Idempotence test:pass' && exit 0) || (echo 'Idempotence test:fail' && exit 1)"
+ - sudo docker exec -it ansible /bin/bash -c "yum repolist |grep -q 'percona' && (echo 'percona is present in yum repolist' && exit 0) || (echo 'percona is not present in yum repolist' && exit 1)"
+
+after_script:
+ - sudo docker stop ansible
+ - sudo docker rm ansible
+
+notifications:
+  slack:
+    secure: YQVL96A/38AWvAHAhIabUNwhNW4Biqdb5tqhgnBJvkmeS4aCzlgabDZPe4nk49wKTxXVDfECn3XQuUzIapFaps0eymW4JGOXF1x7qShj9BjlanqSLfEUqynjnhICPmC9KFDuMivcATMDO6iKU2KaKq6F3PzRIGLDWf6MF3W15bc943FvsFkStmE175gVUIrf/8vpC3aSFj4+TQScrlu3vKFLrUMIpEGCIP21Tkfn3DJZIRY6WuBt/9Izm9rsB6TJ8SkIwI2PUN2ohwv1+/65wF2WRBoO9ZHAroHTr1TADtnTdCjE/SrPadsiH7uLlUsz3Q1Az7pWwgRfmSClmpjujgFlg5GrtZuhFlXFkJxiQFCXKAGtXTmXNxB+/mvMpuwpASi4bfWmL1VeBidOVc7h15R3VMAgnjstbEGQQ0oL/j1uf+5DRwimVqOk1iTHf/Y4MjSUoYaQZsn4gnzxWYe5x2IQOYLfrqA94sGjP6fQmW2C0irQWZXTrytu+Qi5x4ex2FY/FFO8VvVsWdEL/8YsNc9MfyFEYm5nPcl5zOLir0rDJeCq75yFqvbbJBAo87z49z3qRaam+UVvOt8j3RiHMKUD2z3rky4FLK4utpxyQNXxDBcfg56TieK2K/zRzojf1a+nAbPX0aKp+FoMm8dI1Off2K8FXTpZaXoNnnETpMk=
