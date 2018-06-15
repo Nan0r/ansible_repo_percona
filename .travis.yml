@@ -22,11 +22,12 @@ install:
 
 before_script:
  - sudo docker logs ansible
- - sudo docker exec -it ansible /bin/bash -c "ssh -oStrictHostKeyChecking=no -i .ssh/id_rsa localhost exit"
+ - sudo docker exec -it ansible /bin/bash -c "ssh -4 -oStrictHostKeyChecking=no -i .ssh/id_rsa root@localhost exit"
  - sudo docker exec -it ansible /bin/bash -c "whoami"
  - sudo docker exec -it ansible /bin/bash -c "pwd"
  - sudo docker exec -it ansible /bin/bash -c "ls /root/"
- - sudo docker exec -it ansible /bin/bash -c "hostname"
+ - sudo docker exec -it ansible /bin/bash -c "cat /etc/hostname"
+ - sudo docker exec -it ansible /bin/bash -c "cat /etc/hosts"
 
 script:
  # Run tests in Container
