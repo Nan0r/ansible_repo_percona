@@ -23,6 +23,7 @@ install:
 before_script:
  - sudo docker logs ansible
  - sudo docker exec -it ansible ls -als /root/ansible_repo_percona/
+ - sudo docker exec -it ansible /bin/bash -c "yum -y update"
 
 script:
  # Run tests in Container
