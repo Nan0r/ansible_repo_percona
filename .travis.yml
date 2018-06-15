@@ -22,23 +22,20 @@ install:
 
 before_script:
  - sudo docker logs ansible
- - sudo docker exec -it ansible ls -alsR /root/ansible_repo_percona/
- - sudo docker exec -it ansible /bin/bash -c "yum -y update"
- - sudo docker logs ansible
- - sudo docker exec -it ansible /bin/bash -c "systemctl enable sshd"
- - sudo docker exec -it ansible /bin/bash -c "systemctl start sshd"
- - sudo docker exec -it ansible /bin/bash -c "ssh-keygen -b 4096 -t rsa -f ~/.ssh/id_rsa -N ''"
- - sudo docker exec -it ansible /bin/bash -c "cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys"
+ - sudo docker exec -it ansible /bin/bash -c "systemctl status sshd"
  - sudo docker exec -it ansible /bin/bash -c "ssh -oStrictHostKeyChecking=no -i .ssh/id_rsa localhost exit"
  - sudo docker exec -it ansible /bin/bash -c "whoami"
  - sudo docker exec -it ansible /bin/bash -c "pwd"
  - sudo docker exec -it ansible /bin/bash -c "ls /root/"
+ - sudo docker exec -it ansible /bin/bash -c "hostname"
 
 script:
  # Run tests in Container
- - sudo docker exec -it ansible /bin/bash -c "ansible-playbook -i /root/ansible_repo_percona/tests/inventory /root/ansible_repo_percona/tests/test.yml --syntax-check"
- - sudo docker exec -it ansible /bin/bash -c "ansible-playbook -i /root/ansible_repo_percona/tests/inventory /root/ansible_repo_percona/tests/test.yml --connection=local --sudo"
- - sudo docker exec -it ansible /bin/bash -c "ansible-playbook -i /root/ansible_repo_percona/tests/inventory /root/ansible_repo_percona/tests/test.yml --connection=local --sudo | grep -q 'changed=0.*failed=0' && (echo 'Idempotence test:pass' && exit 0) || (echo 'Idempotence test:fail' && exit 1)"
+ - sudo docker exec -it ansible /bin/bash -c "ansible -m ping localhost --one-line"
+ - sudo docker exec -it ansible /bin/bash -c "ansible -m ping all --one-line"
+ - sudo docker exec -it ansible /bin/bash -c "ansible-playbook /root/ansible_repo_percona/tests/test.yml --syntax-check"
+ - sudo docker exec -it ansible /bin/bash -c "ansible-playbook /root/ansible_repo_percona/tests/test.yml --connection=local --sudo"
+ - sudo docker exec -it ansible /bin/bash -c "ansible-playbook /root/ansible_repo_percona/tests/test.yml --connection=local --sudo | grep -q 'changed=0.*failed=0' && (echo 'Idempotence test:pass' && exit 0) || (echo 'Idempotence test:fail' && exit 1)"
  - sudo docker exec -it ansible /bin/bash -c "yum repolist"
  - sudo docker exec -it ansible /bin/bash -c "yum repolist |grep -q 'percona-release-noarch' && (echo 'percona is present in yum repolist' && exit 0) || (echo 'percona is not present in yum repolist' && exit 1)"
 
