@@ -24,6 +24,9 @@ before_script:
  - sudo docker logs ansible
 # - echo | telnet localhost 22
 # - sudo docker exec -it ansible /bin/bash -c "ssh -4 -oStrictHostKeyChecking=no -i .ssh/id_rsa root@localhost exit"
+ - sudo docker exec -it ansible /bin/bash -c "yum -y install net-tools"
+ - sudo docker exec -it ansible /bin/bash -c "systemctl start sshd"
+ - sudo docker exec -it ansible /bin/bash -c "netstat -plunte |grep -i ssh"
  - sudo docker exec -it ansible /bin/bash -c "whoami"
  - sudo docker exec -it ansible /bin/bash -c "pwd"
  - sudo docker exec -it ansible /bin/bash -c "ls /root/"
