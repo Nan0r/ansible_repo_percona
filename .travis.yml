@@ -37,7 +37,7 @@ script:
  # Run tests in Container
  - sudo docker exec -it ansible /bin/bash -c "ansible -m ping localhost --one-line"
  - sudo docker exec -it ansible /bin/bash -c "ansible -m ping all --one-line"
- - sudo docker exec -it ansible /bin/bash -c "ansible-playbook /root/ansible_repo_percona/tests/test.yml --syntax-check"
+ - sudo docker exec -it ansible /bin/bash -c "ansible-playbook /root/ansible_repo_percona/tests/test.yml --syntax-check --extra-vars 'target=all'"
  - sudo docker exec -it ansible /bin/bash -c "ansible-playbook /root/ansible_repo_percona/tests/test.yml --sudo"
  - sudo docker exec -it ansible /bin/bash -c "ansible-playbook /root/ansible_repo_percona/tests/test.yml --sudo | grep -q 'changed=0.*failed=0' && (echo 'Idempotence test:pass' && exit 0) || (echo 'Idempotence test:fail' && exit 1)"
  - sudo docker exec -it ansible /bin/bash -c "yum repolist"

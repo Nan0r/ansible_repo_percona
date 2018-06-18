@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: '{{ target }}'
   sudo: yes
   tasks:
   - name: adding percona repository on redhat like operating system
