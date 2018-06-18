@@ -22,7 +22,7 @@ install:
 
 before_script:
  - sudo docker logs ansible
- - echo | telnet localhost 22
+# - echo | telnet localhost 22
 # - sudo docker exec -it ansible /bin/bash -c "ssh -4 -oStrictHostKeyChecking=no -i .ssh/id_rsa root@localhost exit"
  - sudo docker exec -it ansible /bin/bash -c "whoami"
  - sudo docker exec -it ansible /bin/bash -c "pwd"
